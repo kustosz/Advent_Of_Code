@@ -1,0 +1,14 @@
+from Base import all
+
+polyglot java import java.lang.Long
+
+Integer.parse txt =
+    Panic.recover (Long.parseLong [txt]) . catch _-> Nothing
+
+Vector.Vector.find predicate =
+    s = this.length
+    go i = if i >= s then Nothing else
+        if predicate (this.at i) then this.at i else
+            @Tail_Call go i+1
+    res = go 0
+    res

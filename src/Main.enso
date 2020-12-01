@@ -1,0 +1,3 @@
+import Advent_Of_Code.Task_1
+
+main = Task_1.main

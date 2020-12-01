@@ -1,0 +1,21 @@
+from Base import all
+from Advent_Of_Code.Ext import all
+
+main =
+    d = Enso_Project.data / 'input_1.txt'
+    lines = d . read . split '\n'
+    nums = lines.map Integer.parse
+    num_map = nums.fold Map.empty (m -> i -> m.insert i i)
+    found_2 = nums.find i-> (Nothing == num_map.get 2020-i).not
+    IO.println (found_2 * num_map.get 2020-found_2)
+
+    with_seconds = nums.map i->
+        found_snd = nums.find j->
+            (Nothing == num_map.get 2020-(i+j)).not
+        if found_snd == Nothing then Nothing else [i, found_snd]
+    found_p = with_seconds.find x-> Nothing==x . not
+    x_1 = found_p.at 0
+    x_2 = found_p.at 1
+    r = x_1 * x_2 * num_map.get (2020 - x_1+x_2)
+    IO.println r
+
