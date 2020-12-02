@@ -1,0 +1,28 @@
+from Base import all
+from Advent_Of_Code.Ext import all
+
+type Record num_1 num_2 char password
+
+main =
+    f = Enso_Project.data / 'input_2.txt'
+    lines = f.read . split '\n'
+    records = lines.map line->
+        words = line.split ' '
+        counts = words.at 0 . split '-'
+        min = Integer.parse (counts.at 0)
+        max = Integer.parse (counts.at 1)
+        letter = words.at 1 . drop_last 1
+        password = words.at 2
+        Record min max letter password
+
+    valid_1 = records.filter r->
+        letter_count = r.password.characters.filter (== r.char) . length
+        letter_count<=r.num_2 && letter_count>=r.num_1
+    IO.println valid_1.length
+
+    valid_2 = records.filter <| case _ of
+        Record p_1 p_2 c pass ->
+            chars = pass.characters
+            (chars.at p_1-1 == c) ^ (chars.at p_2-1 == c)
+    IO.println valid_2.length
+
