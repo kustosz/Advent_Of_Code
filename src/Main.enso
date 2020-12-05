@@ -1,3 +1,3 @@
-import Advent_Of_Code.Task_3
+import Advent_Of_Code.Task_4
 
-main = Task_3.main
+main = Task_4.main

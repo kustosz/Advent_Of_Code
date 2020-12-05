@@ -1,0 +1,60 @@
+from Base import all
+from Advent_Of_Code.Ext import all
+
+is_valid_1 passport =
+    req_fields = ['ecl', 'pid', 'eyr', 'hcl', 'byr', 'iyr', 'hgt']
+    req_fields.all f-> passport.get f != Nothing
+
+validate_field fname validator passport = case passport.get fname of
+    Nothing -> False
+    val -> validator val
+
+is_in_char_range str chars =
+    str.characters.all chars.contains
+
+is_numeric_range str min max = case Integer.parse str of
+    Nothing -> False
+    n -> n>=min && n<=max
+
+main =
+    f = Enso_Project.data / 'input_4.txt'
+    passports = f.read.split '\n\n' . map line->
+        words = line.split
+        words.fold Map.empty m-> w->
+            kv = w.split ':'
+            m.insert (kv.at 0) (kv.at 1)
+
+    IO.println <| passports.filter here.is_valid_1 . length
+
+    digits = "0123456789".characters
+    hex_digits = "0123456789abcdef".characters
+
+    byr_valid = here.validate_field "byr" val->
+        val.length==4 && here.is_numeric_range val 1920 2002
+    iyr_valid = here.validate_field "iyr" val->
+        val.length==4 && here.is_numeric_range val 2010 2020
+    eyr_valid = here.validate_field "eyr" val->
+        val.length==4 && here.is_numeric_range val 2020 2030
+    hgt_valid = here.validate_field "hgt" val->
+        if val.length < 3 then False else
+            num_part = val.drop_last 2
+            unit_part = val.take_last 2
+            if unit_part == 'cm' then here.is_numeric_range num_part 150 193 else
+                if unit_part == 'in' then here.is_numeric_range num_part 59 76 else
+                    False
+    hcl_valid = here.validate_field 'hcl' val->
+        len = val.length == 7
+        fst = val.take_first 1 == '\u{23}'
+        range = here.is_in_char_range (val.drop_first 1) hex_digits
+        len && fst && range
+    eye_colors = ['amb', 'blu', 'brn', 'gry', 'grn', 'hzl', 'oth']
+    ecl_valid = here.validate_field 'ecl' eye_colors.contains
+    pid_valid = here.validate_field 'pid' val->
+        val.length==9 && here.is_in_char_range val digits
+
+    validators = [byr_valid, iyr_valid, eyr_valid, hgt_valid, hcl_valid, ecl_valid, pid_valid]
+
+    valid_passports = passports.filter passport->
+        validators.all v-> v passport
+    IO.println valid_passports.length
+

@@ -14,3 +14,10 @@ Vector.Vector.find predicate =
             @Tail_Call go i+1
     res = go 0
     res
+
+Vector.Vector.reduce function =
+    if this.length == 0 then Nothing else
+        1.up_to this.length . fold (this.at 0) acc-> i->
+            function acc (this.at i)
+
+Any.!= that = this==that . not
