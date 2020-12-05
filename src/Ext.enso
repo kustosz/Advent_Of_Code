@@ -2,8 +2,8 @@ from Base import all
 
 polyglot java import java.lang.Long
 
-Integer.parse txt =
-    Panic.recover (Long.parseLong [txt]) . catch _-> Nothing
+Integer.parse txt radix=10 =
+    Panic.recover (Long.parseLong [txt,radix]) . catch _-> Nothing
 
 Boolean.^ that = (this || that) && (this && that).not
 

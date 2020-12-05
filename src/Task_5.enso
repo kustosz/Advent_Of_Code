@@ -1,0 +1,20 @@
+from Base import all
+from Advent_Of_Code.Ext import all
+
+main =
+    file = Enso_Project.data / 'input_5.txt'
+    lines = file.read.split '\n'
+    numbers = lines.map l->
+        char_num = l.characters.map c->
+            if c=='B' || c=='R' then '1' else '0'
+        n = char_num.join ''
+        Integer.parse n radix=2
+    highest = numbers.reduce max
+    IO.println highest
+
+    0.up_to 1024 . each i->
+        this_free = not (numbers.contains i)
+        prev_occ = numbers.contains i-1
+        next_occ = numbers.contains i+1
+        if this_free && prev_occ && next_occ then
+            IO.println i
