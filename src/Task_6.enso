@@ -1,0 +1,24 @@
+from Base import all
+from Advent_Of_Code.Ext import all
+
+main =
+    f = Enso_Project.data / 'input_6.txt'
+    groups = f.read.split '\n\n'
+    counts = groups.map g->
+        all_ans = g.split '\n' . join '' . characters
+        anses = all_ans.fold Map.empty m-> c-> m.insert c False
+        anses.to_vector.length
+    IO.println (counts.reduce (+))
+
+    counts_2 = groups.map g->
+        individual_ans = g.split '\n' . map characters
+        ans_counts = individual_ans . fold Map.empty m-> ans->
+            ans.fold m m-> a->
+                old_a = m.get_or_else a 0
+                m.insert a old_a+1
+        max = individual_ans.length
+        ans_counts . to_vector . filter (kv-> kv.at 1 == max) . length
+    IO.println (counts_2 . reduce (+))
+
+
+
