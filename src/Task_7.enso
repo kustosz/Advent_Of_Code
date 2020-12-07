@@ -1,0 +1,72 @@
+from Base import all
+from Advent_Of_Code.Ext import all
+
+type Contained_Bag color number
+
+type Rule color contained
+type Recursive
+
+type Contains_State
+
+contains_bag seek container rules =
+    containment_map = State.get Contains_State
+    case containment_map.get container of
+        Nothing ->
+            ruleset = rules.get container
+            found_chld = rules.get container . find c-> c.color == seek
+            case found_chld of
+                Nothing ->
+                    recur = ruleset.find c-> here.contains_bag seek c.color rules
+                    r = recur != Nothing
+                    State.modify Contains_State (_.insert container r)
+                    r
+                _ ->
+                    State.put Contains_State (containment_map.insert container True)
+                    True
+        r -> r
+
+run rules =
+    r_map = rules.fold Map.empty m-> r-> m.insert r.color r.contained
+    State.run Contains_State Map.empty <|
+        r = rules.filter r-> here.contains_bag 'shiny gold' r.color r_map
+        IO.println r.length
+
+type Count_State
+
+count seek rules =
+    count_map = State.get Count_State
+    case count_map.get seek of
+        Nothing ->
+            ruleset = rules.get seek
+            counts = ruleset.map b->
+                single_c = here.count b.color rules
+                (single_c + 1) * b.number
+            r = counts.fold 0 (+)
+            State.modify Count_State (_.insert seek r)
+            r
+        n -> n
+
+run_count rules =
+    r_map = rules.fold Map.empty m-> r-> m.insert r.color r.contained
+    State.run Count_State Map.empty <|
+        r = here.count 'shiny gold' r_map
+        IO.println r
+
+main =
+    f = Enso_Project.data / 'input_7.txt'
+    rules = f.read.split '\n' . map l->
+        s_1 = l.split ' contain '
+        l_color = s_1.at 0 . drop_last 5
+        rs = s_1.at 1
+        contained = case rs == 'no other bags.' of
+            True -> []
+            False -> s_1.at 1 . split ', ' . map seg->
+                ws = seg.split ' '
+                count = Integer.parse (ws.at 0)
+                col = ws.at 1 + ' ' + ws.at 2
+                Contained_Bag col count
+        Rule l_color contained
+
+    here.run rules
+
+    here.run_count rules

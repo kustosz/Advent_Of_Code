@@ -21,3 +21,7 @@ Vector.Vector.reduce function =
             function acc (this.at i)
 
 Any.!= that = this==that . not
+
+State.modify st fun =
+    x = State.get st
+    State.put st (fun x)
