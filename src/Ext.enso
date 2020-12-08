@@ -22,6 +22,9 @@ Vector.Vector.reduce function =
 
 Any.!= that = this==that . not
 
+Vector.Vector.thaw =
+    Vector.new this.length this.at . to_array
+
 State.modify st fun =
     x = State.get st
     State.put st (fun x)

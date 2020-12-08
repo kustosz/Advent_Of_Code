@@ -1,0 +1,60 @@
+from Base import all
+from Advent_Of_Code.Ext import all
+
+type Op
+    type Nop operand
+    type Acc operand
+    type Jmp operand
+    type Loop
+    type Halt
+
+type Return_Mode
+    type Halted acc
+    type Looped acc
+
+op_from_str str op =
+    if str == 'nop' then Nop op else
+        if str == 'acc' then Acc op else
+            if str == 'jmp' then Jmp op else
+                Panic.throw "malformed input"
+
+run program =
+    go pc x = case program.at pc of
+        Nop _ ->
+            program.set_at pc Loop
+            @Tail_Call go pc+1 x
+        Acc op ->
+            program.set_at pc Loop
+            @Tail_Call go pc+1 x+op
+        Jmp op ->
+            program.set_at pc Loop
+            @Tail_Call go pc+op x
+        Loop -> Looped x
+        Halt -> Halted x
+    go 0 0
+
+flip ins = case ins of
+    Nop x -> Jmp x
+    Jmp x -> Nop x
+
+debug program =
+    go i = case program.at i of
+        Acc _ -> @Tail_Call go i+1
+        op ->
+            p = program.thaw
+            p.set_at i (here.flip op)
+            case here.run p of
+                Halted x -> Halted x
+                Looped _ -> @Tail_Call go i+1
+    go 0
+
+main =
+    f = Enso_Project.data / 'input_8.txt'
+    instructions = f.read.split '\n' . map l->
+        ws = l.split
+        arg = Integer.parse (ws.at 1)
+        here.op_from_str (ws.at 0) arg
+    program = instructions + [Halt]
+
+    IO.println (here.run program.thaw)
+    IO.println (here.debug program)
